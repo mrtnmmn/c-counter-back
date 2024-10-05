@@ -1,17 +1,24 @@
 const express = require('express');
+const mongoose = require('mongoose');
+require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware to parse JSON bodies
+const mongoURI = process.env.MONGO_URI
+
+mongoose.connect(mongoURI)
+  .then(() => console.log('MongoDB connected...'))
+  .catch(err => console.log('Error connecting to MongoDB:', err));
+
 app.use(express.json());
 
-// Define a simple route
 app.get('/', (req, res) => {
-    res.send('Hello, World!');
+  res.send('Hello, World!');
 });
 
-// Start the server
+app.use('/api/auth', authRoutes);
+
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
 
