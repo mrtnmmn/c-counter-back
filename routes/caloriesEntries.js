@@ -18,19 +18,19 @@ router.get('/', authMiddleware, async (req, res) => {
 
     res.status(200).json(formatResponse(entries, { count: entries.length, caloriesSum: sum }));
   } catch (err) {
-    res.status(500).json(formatErrorResponse(message = 'Server error'));
+    res.status(500).json(formatErrorResponse('Server error'));
   }
 });
 
 router.get('/today', authMiddleware, async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id
 
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+    const startOfDay = new Date()
+    startOfDay.setHours(0, 0, 0, 0)
 
-    const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999);
+    const endOfDay = new Date()
+    endOfDay.setHours(23, 59, 59, 999)
 
     const entries = await CaloriesEntry.find({
       user: userId,
@@ -41,12 +41,16 @@ router.get('/today', authMiddleware, async (req, res) => {
     });
 
     if (!entries.length) {
-      return res.status(404).json({ message: 'No entries found for today' });
+      return res.status(404).json(formatErrorResponse('No entries found for today'))
     }
 
-    res.json(entries);
+    const sum = entries.reduce((accumulator, entry) => {
+      return accumulator + entry.calories
+    }, 0)
+
+    res.status(200).json(formatResponse(entries, {count: entries.length, caloriesSum: sum}))
   } catch (err) {
-    res.status(500).json({ message: 'Server error', err });
+    res.status(500).json(formatErrorResponse('Server error'));
   }
 });
 
@@ -63,9 +67,9 @@ router.post('/', authMiddleware, async (req, res) => {
 
     await newEntry.save();
 
-    res.status(201).json({ message: 'Entry created successfully', entry: newEntry });
+    res.status(201).json(formatResponse(newEntry, null, 'Entry created successfully'));
   } catch (err) {
-    res.status(500).json({ message: 'Server error', err});
+    res.status(500).json(formatErrorResponse('Server error'));
   }
 });
 

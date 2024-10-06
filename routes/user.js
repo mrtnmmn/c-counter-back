@@ -1,30 +1,28 @@
-const express = require('express');
-const User = require('../models/User');
-const router = express.Router();
+const express = require('express')
+const User = require('../models/User')
+const { formatErrorResponse, formatResponse } = require('../utils/responseFormatter')
+const router = express.Router()
 
 router.post('/register', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password } = req.body
 
-    // Check if user already exists
-    let user = await User.findOne({ username });
+    let user = await User.findOne({ username })
     if (user) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json(formatErrorResponse('User already exists'))
     }
 
-    // Create new user
     user = new User({
       username,
       password
-    });
+    })
 
-    // Save user to database
-    await user.save();
+    await user.save()
 
-    res.status(201).json({ message: 'User registered successfully' });
+    res.status(201).json(formatResponse(null, null, 'User registered successfully'))
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error(error)
+    res.status(500).json(formatErrorResponse('Server error'))
   }
 });
 
