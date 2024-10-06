@@ -1,10 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
+
 require('dotenv').config();
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 const mongoURI = process.env.MONGO_URI
+
+const authRoutes = require('./routes/auth');
+const caloriesEntriesRoutes = require('./routes/caloriesEntries')
+const userRoutes = require('./routes/user')
 
 mongoose.connect(mongoURI)
   .then(() => console.log('MongoDB connected...'))
@@ -12,13 +18,14 @@ mongoose.connect(mongoURI)
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
+app.get('/api/health', (req, res) => {
+  res.send('OK');
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/calories-entries', caloriesEntriesRoutes)
+app.use('/api/user', userRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-
