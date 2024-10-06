@@ -1,6 +1,7 @@
 const express = require('express');
 const CaloriesEntry = require('../models/CaloriesEntry');
 const authMiddleware = require('../middlewares/authMiddleware'); // 
+const { formatResponse, formatErrorResponse } = require('../utils/responseFormatter');
 
 const router = express.Router();
 
@@ -9,13 +10,15 @@ router.get('/', authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
 
-    console.log(userId)
-
     const entries = await CaloriesEntry.find({ user: userId });
 
-    res.json(entries);
+    const sum = entries.reduce((accumulator, entry) => {
+      return accumulator + entry.calories;
+    }, 0);
+
+    res.status(200).json(formatResponse(entries, { count: entries.length, caloriesSum: sum }));
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json(formatErrorResponse(message = 'Server error'));
   }
 });
 
@@ -26,12 +29,8 @@ router.get('/today', authMiddleware, async (req, res) => {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
-    console.log(startOfDay)
-
     const endOfDay = new Date();
     endOfDay.setHours(23, 59, 59, 999);
-
-    console.log(endOfDay)
 
     const entries = await CaloriesEntry.find({
       user: userId,
@@ -57,8 +56,6 @@ router.post('/', authMiddleware, async (req, res) => {
 
   try {
     const userId = req.user.id;
-
-    console.log(calories, userId)
 
     const newEntry = new CaloriesEntry({
       user: userId,
