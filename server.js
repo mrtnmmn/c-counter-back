@@ -12,6 +12,8 @@ const authRoutes = require('./routes/auth');
 const caloriesEntriesRoutes = require('./routes/caloriesEntries')
 const userRoutes = require('./routes/user')
 
+console.log(mongoURI)
+
 mongoose.connect(mongoURI)
   .then(() => console.log('MongoDB connected...'))
   .catch(err => console.log('Error connecting to MongoDB:', err));
