@@ -1,6 +1,6 @@
 const express = require('express');
 const CaloriesEntry = require('../models/CaloriesEntry');
-const authMiddleware = require('../middlewares/authMiddleware'); // 
+const authMiddleware = require('../middlewares/authMiddleware');
 const { formatResponse, formatErrorResponse } = require('../utils/responseFormatter');
 
 const router = express.Router();
@@ -49,7 +49,6 @@ router.get('/today', authMiddleware, async (req, res) => {
     res.status(500).json({ message: 'Server error', err });
   }
 });
-
 
 router.post('/', authMiddleware, async (req, res) => {
   const { calories } = req.body;
